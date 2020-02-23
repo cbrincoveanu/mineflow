@@ -89,11 +89,11 @@ class MenuView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text("Instructions", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 50,
-                         arcade.color.BLACK, font_size=30, anchor_x="center")
-        arcade.draw_text("use UP/LEFT/DOWN/RIGHT or W/A/S/D to move, jump and dig", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                         arcade.color.BLACK, font_size=20, anchor_x="center")
-        arcade.draw_text("Click to start the game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 150,
+        arcade.draw_text("Instructions", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
+                         arcade.color.BLACK, font_size=40, anchor_x="center")
+        arcade.draw_text("W - jump\nA - move/dig left\nD - move/dig right\nS - dig down\nF - full screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50,
+                         arcade.color.BLACK, font_size=20, anchor_x="center", align="center")
+        arcade.draw_text("Click to start", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 150,
                          arcade.color.BLACK, font_size=30, anchor_x="center")
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
