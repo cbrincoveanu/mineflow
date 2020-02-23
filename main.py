@@ -91,7 +91,8 @@ class MenuView(arcade.View):
         arcade.start_render()
         arcade.draw_text("Instructions", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
                          arcade.color.BLACK, font_size=40, anchor_x="center")
-        arcade.draw_text("W - jump\nA - move/dig left\nD - move/dig right\nS - dig down\nF - full screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50,
+        arcade.draw_text("W - jump\nA - move/dig left\nD - move/dig right\nS - dig down\n" +
+                         "SPACE - fill current location with earth\nF12 - full screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50,
                          arcade.color.BLACK, font_size=20, anchor_x="center", align="center")
         arcade.draw_text("Click to start", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 150,
                          arcade.color.BLACK, font_size=30, anchor_x="center")
@@ -133,10 +134,12 @@ class GameView(arcade.View):
         self.digging = "no"
 
         self.dig_pause = 0
-        self.gold = 100
+        self.inv_gold = 100
+        self.inv_earth = 0
 
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
         self.cannot_dig_sound = arcade.load_sound(":resources:sounds/error3.wav")
+        self.error_sound = arcade.load_sound(":resources:sounds/error2.wav")
         self.dig_sound = arcade.load_sound(":resources:sounds/rockHit2.wav")
         self.gold_sound = arcade.load_sound(":resources:sounds/coin5.wav")
         self.success_dig_sound = arcade.load_sound(":resources:sounds/hit3.wav")
@@ -149,7 +152,8 @@ class GameView(arcade.View):
 
         random.seed(30)
 
-        self.gold = 100
+        self.inv_gold = 100
+        self.inv_earth = 0
 
         self.background = arcade.load_texture(":resources:images/backgrounds/abstract_2.jpg")
 
@@ -197,10 +201,11 @@ class GameView(arcade.View):
             tile = self.tiles[x][y]
             if tile.can_dig():
                 if tile.dig():
+                    self.inv_earth += 1
                     self.remove_tile(x, y)
                     arcade.play_sound(self.success_dig_sound)
                 elif tile.is_gold():
-                    self.gold += 1
+                    self.inv_gold += 1
                     arcade.play_sound(self.gold_sound)
                 else:
                     arcade.play_sound(self.dig_sound)
@@ -223,7 +228,8 @@ class GameView(arcade.View):
         # x = px_to_x(self.player_sprite.center_x)
         # y = px_to_y(self.player_sprite.center_y)
         # arcade.draw_rectangle_outline(x_to_px(x), y_to_px(y), FULL_TILE, FULL_TILE, arcade.csscolor.GRAY)
-        arcade.draw_text(f"Gold: {self.gold}", self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 30,
+        arcade.draw_text(f"Gold: {self.inv_gold}\nEarth: {self.inv_earth}",
+                         self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 50,
                          arcade.csscolor.BLACK, font_size=16)
 
     def process_key_change(self):
@@ -263,7 +269,20 @@ class GameView(arcade.View):
 
         self.process_key_change()
 
-        if key == arcade.key.F:
+        if key == arcade.key.SPACE:
+            x = px_to_x(self.player_sprite.center_x)
+            y = px_to_y(self.player_sprite.center_y)
+            if self.inv_earth < 1 or self.tiles[x][y] is not None:
+                arcade.play_sound(self.error_sound)
+            elif self.tiles[x-1][y] is None or self.tiles[x+1][y] is None:
+                self.inv_earth -= 1
+                self.add_tile(x, y)
+            elif self.tiles[x][y-1] is None or self.tiles[x][y+1] is None:
+                self.inv_earth -= 1
+                self.add_tile(x, y)
+            else:
+                arcade.play_sound(self.error_sound)
+        if key == arcade.key.F12:
             self.window.set_fullscreen(not self.window.fullscreen)
             width, height = self.window.get_size()
             self.window.set_viewport(0, width, 0, height)
