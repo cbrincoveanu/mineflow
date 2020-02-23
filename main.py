@@ -223,6 +223,8 @@ class GameView(arcade.View):
         x = px_to_x(self.player_sprite.center_x)
         y = px_to_y(self.player_sprite.center_y)
         arcade.draw_rectangle_outline(x_to_px(x), y_to_px(y), FULL_TILE, FULL_TILE, arcade.csscolor.GRAY)
+        arcade.draw_text(f"Gold: {self.gold}", self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 30,
+                         arcade.csscolor.BLACK, font_size=16)
 
     def process_key_change(self):
         """
